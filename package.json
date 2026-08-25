@@ -1,0 +1,20 @@
+{
+  "name": "mechanomyogram-interactive-system",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "start": "node scripts/start-all.js",
+    "dev:all": "node scripts/start-all.js",
+    "build": "vite build",
+    "preview": "vite preview",
+    "osc-bridge": "node scripts/osc-bridge.js"
+  },
+  "devDependencies": {
+    "vite": "^5.4.2"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

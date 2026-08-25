@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biophysical Muscle Sound Interactive System (Xth Sense Variation)</title>
+  <link rel="stylesheet" href="/src/style.css">
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js" defer></script>
+</head>
+
+<body>
+
+  <!-- Top Navbar Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon"></div>
+      <h1>XTH-MMG Interactive Studio</h1>
+      <span>Organic Muscle & OSC Engine</span>
+    </div>
+
+    <div class="header-controls">
+      <select id="audio-device-select">
+        <option value="">Default Wireless Mic Input</option>
+      </select>
+
+      <button id="start-btn" class="btn-primary">🎤 Start Audio Engine</button>
+      <span id="latency-display" class="badge badge-info">Latency: -- ms</span>
+      <span id="softclip-badge" class="badge badge-warning hidden">SOFT CLIPPER ACTIVE</span>
+      <span id="feedback-badge" class="badge badge-warning hidden">FEEDBACK SUPPRESSED</span>
+
+      <button id="panic-btn" class="panic-button">⚡ PANIC MUTE</button>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Controls (5-Column Responsive Grid) -->
+  <main class="dashboard-grid">
+
+    <!-- Panel 1: Signal Conditioning -->
+    <section class="panel">
+      <div class="panel-header">
+        <h2>1. Signal Conditioning</h2>
+        <span class="badge badge-info">DSP Thread</span>
+      </div>
+
+      <!-- Input Gain Knob -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="input-gain">Input Gain (Pre-DSP)</label>
+          <span id="input-gain-val" class="value">6 dB</span>
+        </div>
+        <input type="range" id="input-gain" min="0" max="24" step="1" value="6">
+      </div>
+
+      <!-- Preset Quick Tuning Buttons -->
+      <div class="control-group">
+        <div class="control-label"><span>Bandpass Presets</span></div>
+        <div class="preset-row">
+          <button id="preset-wide" class="btn-preset">Wide (60-4k)</button>
+          <button id="preset-friction" class="btn-preset">Friction</button>
+          <button id="preset-impact" class="btn-preset">Impact</button>
+        </div>
+      </div>
+
+      <!-- Highpass Cutoff -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="hpf-cutoff">Highpass Filter (Cutoff)</label>
+          <span id="hpf-cutoff-val" class="value">40 Hz</span>
+        </div>
+        <input type="range" id="hpf-cutoff" min="10" max="200" step="5" value="40">
+      </div>
+
+      <!-- Bandpass Low Cut -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="bpf-lowcut">Bandpass Low-Cut</label>
+          <span id="bpf-lowcut-val" class="value">60 Hz</span>
+        </div>
+        <input type="range" id="bpf-lowcut" min="20" max="1000" step="10" value="60">
+      </div>
+
+      <!-- Bandpass High Cut -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="bpf-highcut">Bandpass High-Cut</label>
+          <span id="bpf-highcut-val" class="value">4000 Hz</span>
+        </div>
+        <input type="range" id="bpf-highcut" min="500" max="8000" step="100" value="4000">
+      </div>
+
+      <!-- Noise Gate Threshold -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="gate-thresh">Noise Gate Threshold</label>
+          <span id="gate-thresh-val" class="value">-54 dB</span>
+        </div>
+        <input type="range" id="gate-thresh" min="-60" max="-12" step="1" value="-54">
+      </div>
+    </section>
+
+    <!-- Panel 2: Feature Extraction & Onset -->
+    <section class="panel">
+      <div class="panel-header">
+        <h2>2. Feature Extraction</h2>
+        <span class="badge badge-info">2048 FFT</span>
+      </div>
+
+      <!-- RMS Smoothing Time -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="rms-smooth">RMS Smoothing Window</label>
+          <span id="rms-smooth-val" class="value">40 ms</span>
+        </div>
+        <input type="range" id="rms-smooth" min="10" max="200" step="5" value="40">
+      </div>
+
+      <!-- Onset Sensitivity -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="onset-thresh">Onset Trigger Threshold</label>
+          <span id="onset-thresh-val" class="value">0.03</span>
+        </div>
+        <input type="range" id="onset-thresh" min="0.005" max="0.20" step="0.005" value="0.03">
+      </div>
+
+      <!-- Onset Refractory Period (Debounce) -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="refractory-ms">Refractory Period (Debounce)</label>
+          <span id="refractory-ms-val" class="value">75 ms</span>
+        </div>
+        <input type="range" id="refractory-ms" min="30" max="200" step="5" value="75">
+      </div>
+
+      <!-- Live Feature Readout Gauge -->
+      <div class="gauge-box">
+        <div class="control-label">
+          <span>Muscle Tension (RMS)</span>
+          <span id="rms-value-text" class="value">0.00</span>
+        </div>
+        <div class="rms-bar-container">
+          <div id="rms-bar-fill" class="rms-bar-fill"></div>
+        </div>
+
+        <div class="control-label" style="margin-top: 6px;">
+          <span>Spectral Centroid: <strong id="centroid-val" style="color:#00f2fe;">0 Hz</strong></span>
+          <span>Onset: <i id="onset-led" class="trigger-led"></i></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel 3: Organic Sound Synthesis Engine -->
+    <section class="panel">
+      <div class="panel-header">
+        <h2>3. Organic Muscle Synth</h2>
+        <span class="badge badge-info">Primary Engine</span>
+      </div>
+
+      <!-- Sensitivity Boost Multiplier -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="organic-sensitivity">Sensitivity Boost Multiplier</label>
+          <span id="organic-sensitivity-val" class="value">3.5x</span>
+        </div>
+        <input type="range" id="organic-sensitivity" min="1.0" max="8.0" step="0.5" value="3.5">
+      </div>
+
+      <!-- Master Organic Randomness Slider -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="organic-randomness">Organic Randomness (Jitter)</label>
+          <span id="organic-randomness-val" class="value">60%</span>
+        </div>
+        <input type="range" id="organic-randomness" min="0" max="100" value="60">
+      </div>
+
+      <!-- 1. Creak Layer -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="creak-gain">Creak Layer (Ratchet Onset)</label>
+          <div>
+            <span id="creak-gain-val" class="value">100%</span>
+            <button id="btn-solo-creak" class="btn-solo">SOLO</button>
+          </div>
+        </div>
+        <input type="range" id="creak-gain" min="0" max="100" value="100">
+      </div>
+
+      <!-- 2. Wet Friction Layer -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="friction-gain">Wet Friction Layer (Squelch)</label>
+          <div>
+            <span id="friction-gain-val" class="value">90%</span>
+            <button id="btn-solo-friction" class="btn-solo">SOLO</button>
+          </div>
+        </div>
+        <input type="range" id="friction-gain" min="0" max="100" value="90">
+      </div>
+
+      <!-- 3. Breath Layer -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="breath-gain">Breath Layer (Formant Breath)</label>
+          <div>
+            <span id="breath-gain-val" class="value">75%</span>
+            <button id="btn-solo-breath" class="btn-solo">SOLO</button>
+          </div>
+        </div>
+        <input type="range" id="breath-gain" min="0" max="100" value="75">
+      </div>
+
+      <!-- Debug & Master Volume -->
+      <div class="control-group" style="border-top: 1px solid var(--panel-border); padding-top: 10px;">
+        <div class="control-label">
+          <label for="raw-debug-toggle">Debug Raw Mic Feed (Off by Default)</label>
+          <input type="checkbox" id="raw-debug-toggle">
+        </div>
+        <div id="raw-debug-container" class="hidden" style="margin-top: 6px;">
+          <div class="control-label">
+            <span>Raw Pass-Through Level</span>
+            <span id="raw-gain-val" class="value">0%</span>
+          </div>
+          <input type="range" id="raw-gain" min="0" max="100" value="0">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <label for="master-gain"><strong>Master Volume (0dB Safety Cap)</strong></label>
+          <span id="master-gain-val" class="value">80%</span>
+        </div>
+        <input type="range" id="master-gain" min="0" max="100" value="80">
+      </div>
+    </section>
+
+    <!-- Panel 4: Real-Time OSC Transmission Engine -->
+    <section class="panel">
+      <div class="panel-header">
+        <h2>4. OSC Network Output</h2>
+        <span id="osc-status-badge" class="badge">OFFLINE</span>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <label for="osc-enable-toggle">Enable OSC Stream</label>
+          <input type="checkbox" id="osc-enable-toggle">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <label for="osc-trigger-only-toggle">Send Only On Onset (툭! 소리 감지 시만 1 전송)</label>
+          <input type="checkbox" id="osc-trigger-only-toggle" checked>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label"><label for="osc-server-url">WebSocket Bridge Server</label></div>
+        <input type="text" id="osc-server-url" value="ws://localhost:8080" placeholder="ws://localhost:8080">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label"><label for="osc-target-host">Target Host IP</label></div>
+        <input type="text" id="osc-target-host" value="172.30.1.45" placeholder="172.30.1.45">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label"><label for="osc-udp-port">Target UDP Port (SuperCollider/Max)</label></div>
+        <input type="text" id="osc-udp-port" value="57120" placeholder="57120">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <label for="osc-rate-slider">OSC Refresh Rate</label>
+          <span id="osc-rate-val" class="value">30 Hz</span>
+        </div>
+        <input type="range" id="osc-rate-slider" min="10" max="60" step="5" value="30">
+      </div>
+
+      <!-- OSC Paths Reference Box -->
+      <div class="gauge-box" style="font-size: 0.75rem; line-height: 1.4;">
+        <span style="color: var(--accent-cyan); font-weight: 700;">📡 Active OSC Paths (Onset Signal = 1):</span>
+        <div style="font-family: monospace; color: var(--text-muted);">
+          • <code>/trigger</code> [1]<br>
+          • <code>/xth/muscle/trigger</code> [1]<br>
+          • <code>/xth/muscle/onset</code> [1]
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel 5: WebRTC Live Audio Streamer (Sub Laptop -> Main Laptop) -->
+    <section class="panel">
+      <div class="panel-header">
+        <h2>5. WebRTC Streamer</h2>
+        <span id="webrtc-status-badge" class="badge">OFFLINE</span>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <label for="webrtc-enable-toggle">Enable WebRTC Stream</label>
+          <input type="checkbox" id="webrtc-enable-toggle">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label"><label>Signaling Mode</label></div>
+        <div style="display:flex; gap:12px; font-size:0.8rem; margin-top:4px;">
+          <label><input type="radio" name="webrtc-mode" value="local" checked> 🏠 Local WS (Offline)</label>
+          <label><input type="radio" name="webrtc-mode" value="peerjs"> ☁️ PeerJS Cloud</label>
+        </div>
+      </div>
+
+      <div id="webrtc-local-inputs" class="control-group">
+        <div class="control-label"><label for="webrtc-ws-url">Signaling Server URL</label></div>
+        <input type="text" id="webrtc-ws-url" value="ws://localhost:8080" placeholder="ws://localhost:8080">
+      </div>
+
+      <div id="webrtc-peerjs-inputs" class="control-group hidden">
+        <div class="control-label"><label for="webrtc-peer-id">Sender Peer ID</label></div>
+        <input type="text" id="webrtc-peer-id" value="mmg-sub-mic" placeholder="mmg-sub-mic">
+      </div>
+
+      <!-- Main Laptop Link Box -->
+      <div class="gauge-box" style="font-size: 0.75rem; line-height: 1.4;">
+        <span style="color: var(--accent-cyan); font-weight: 700;">💻 Main Laptop Receiver URL:</span>
+        <div style="font-family: monospace; color: var(--text-muted); word-break: break-all; margin-top: 4px;">
+          <a href="/receiver.html" target="_blank" style="color: #00ffa3; text-decoration: underline;">/receiver.html</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel 6: Real-Time Visualizer Studio -->
+    <section class="visualizer-section">
+      <!-- Canvas 1: Oscilloscope -->
+      <div class="canvas-card">
+        <h3>Oscilloscope (Signal Waveform)</h3>
+        <canvas id="scope-canvas" width="400" height="160"></canvas>
+      </div>
+
+      <!-- Canvas 2: Frequency Spectrum Analyzer -->
+      <div class="canvas-card">
+        <h3>Frequency Spectrum & BPF Tuning Overlay</h3>
+        <canvas id="spectrum-canvas" width="400" height="160"></canvas>
+      </div>
+
+      <!-- Canvas 3: Muscle Tension Envelope History -->
+      <div class="canvas-card">
+        <h3>Muscle Tension (RMS) & Onset History</h3>
+        <canvas id="tension-canvas" width="400" height="160"></canvas>
+      </div>
+    </section>
+
+  </main>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

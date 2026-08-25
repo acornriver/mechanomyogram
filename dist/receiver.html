@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XTH-MMG WebRTC Receiver (Main Laptop - SuperCollider Gateway)</title>
+  <style>
+    body {
+      padding: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .receiver-card {
+      background: var(--panel-bg, #121826);
+      border: 1px solid var(--panel-border, #1e293b);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .vu-container {
+      width: 100%;
+      height: 40px;
+      background: #090d16;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 16px 0;
+      position: relative;
+      border: 1px solid #1e293b;
+    }
+
+    .vu-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00f2fe 0%, #00ffa3 70%, #ff0055 100%);
+      transition: width 50ms ease-out;
+    }
+
+    .vu-text {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .status-box {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .status-offline { background: #334155; color: #94a3b8; }
+    .status-info { background: #0284c7; color: #fff; }
+    .status-success { background: #059669; color: #fff; }
+    .status-warning { background: #d97706; color: #fff; }
+    .status-error { background: #dc2626; color: #fff; }
+
+    .control-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .control-row input[type="text"] {
+      flex: 1;
+      min-width: 240px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: #0b0f19;
+      color: #fff;
+      font-family: monospace;
+    }
+  </style>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js" defer></script>
+  <script type="module" crossorigin src="/assets/receiver-il9Zixm5.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/style-hFp-ZtB8.js">
+  <link rel="stylesheet" crossorigin href="/assets/style-CH9QPOXa.css">
+</head>
+
+<body>
+
+  <header style="margin-bottom: 24px;">
+    <div class="brand">
+      <div class="brand-icon"></div>
+      <h1>XTH-MMG WebRTC Receiver</h1>
+      <span>Main Laptop (SuperCollider Audio Gateway)</span>
+    </div>
+  </header>
+
+  <!-- Panel 1: Connection Settings -->
+  <main>
+    <section class="receiver-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>📡 WebRTC Receiver Connection</h2>
+        <span id="receiver-status-badge" class="status-box status-offline">OFFLINE</span>
+      </div>
+
+      <p style="color: var(--text-muted, #94a3b8); font-size: 0.9rem; margin-top: 8px;">
+        서브 노트북의 웹 브라우저 마이크 오디오 스트림을 실시간 수신하여 가상 오디오 케이블(BlackHole / VB-Cable)로 출력합니다.
+      </p>
+
+      <div class="control-group" style="margin-top: 16px;">
+        <label><strong>Signaling Mode:</strong></label>
+        <div style="display:flex; gap:16px; margin-top:6px;">
+          <label><input type="radio" name="signaling-mode" value="local" checked> 🏠 Local Router (Offline WebSocket)</label>
+          <label><input type="radio" name="signaling-mode" value="peerjs"> ☁️ PeerJS Cloud (Internet)</label>
+        </div>
+      </div>
+
+      <!-- Local Mode Server URL -->
+      <div id="local-mode-box" class="control-row">
+        <input type="text" id="ws-server-url" value="ws://localhost:8080" placeholder="ws://<sub-laptop-ip>:8080">
+        <button id="btn-connect-local" class="btn-primary">🔌 Connect Local WebSocket</button>
+      </div>
+
+      <!-- PeerJS Mode Inputs -->
+      <div id="peerjs-mode-box" class="control-row" style="display: none;">
+        <input type="text" id="peerjs-id-input" value="mmg-main-receiver" placeholder="Receiver Peer ID">
+        <button id="btn-connect-peerjs" class="btn-primary">🌐 Listen on PeerJS</button>
+      </div>
+    </section>
+
+    <!-- Panel 2: Audio Stream Output & Routing -->
+    <section class="receiver-card">
+      <h2>🔊 Live Audio Stream Output</h2>
+
+      <div class="vu-container">
+        <div id="vu-bar" class="vu-bar"></div>
+        <span id="vu-text" class="vu-text">0.0 dB</span>
+      </div>
+
+      <div class="control-row">
+        <button id="btn-audio-unlock" class="btn-primary" style="background:#00ffa3; color:#0b0f19;">🔊 Enable / Unlock Audio Playback</button>
+        <span id="audio-state-label" style="font-size:0.85rem; color:#94a3b8;">AudioContext: Suspended</span>
+      </div>
+
+      <div class="control-group" style="margin-top: 16px;">
+        <div class="control-label">
+          <label for="output-volume">Output Master Volume</label>
+          <span id="output-volume-val" class="value">100%</span>
+        </div>
+        <input type="range" id="output-volume" min="0" max="100" value="100">
+      </div>
+
+      <div class="control-group" style="margin-top: 16px;">
+        <label for="audio-output-device"><strong>Audio Output Device (Virtual Audio Cable / Interface):</strong></label>
+        <select id="audio-output-device" style="width:100%; padding:10px; border-radius:6px; background:#0b0f19; color:#fff; border:1px solid #334155; margin-top:6px;">
+          <option value="">Default Audio Output (System Default)</option>
+        </select>
+        <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;">
+          * SuperCollider 입력을 위해 <strong>BlackHole 2ch</strong> 또는 <strong>VB-Audio Virtual Cable</strong>을 선택하세요.
+        </p>
+      </div>
+
+      <audio id="remote-audio" autoplay playsinline style="display:none;"></audio>
+    </section>
+  </main>
+
+</body>
+
+</html>
