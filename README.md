@@ -6,7 +6,7 @@ A real-time biophysical muscle sound interactive and DSP processing system devel
 
 ## 📖 About the Project
 
-**"Silence"** is an artistic and musical performance work supported and selected by the **Korea National University of Arts (K-Arts / 한예종)** Artist Support & Grant Program.
+**"Silence"** is an artistic and musical performance work conceived by artist **Chaemin Jung (정채민)** and supported/selected by the **Korea National University of Arts (K-Arts / 한예종)** Artist Support & Grant Program.
 
 This project is built upon open-source foundations and inspired by the **xsenth / Xth Sense** biophysical interactive instrument paradigm. It captures acoustic muscle vibrations (**Mechanomyogram / MMG**) via physical acoustic sensors, processing organic bio-signals in real time into interactive sound design, synthesis, OSC routing, and visual streams.
 
@@ -84,6 +84,15 @@ Alternatively, you can run components individually:
 - **Frontend & DSP:** Vanilla JavaScript (ES Modules), Web Audio API, Canvas 2D API, Vite
 - **Networking:** WebSocket (`ws`), WebRTC (PeerJS), OSC (Open Sound Control)
 - **Runtime:** Node.js
+
+---
+
+## 👥 Credits & Team
+
+- **Lead Artist / Project Concept:** Chaemin Jung (정채민)
+- **Technical Direction & Software Development:** Minhyeok Kang / acornriver (강민혁)
+- **Dance & Performance:** Chaeyoung (채영), Seonghyun (성현)
+- **Sound Design:** Seungmin Kim (김승민)
 
 ---
 
