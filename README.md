@@ -91,7 +91,7 @@ Alternatively, you can run components individually:
 
 - **Lead Artist / Project Concept:** Chaemin Jung (정채민)
 - **Technical Direction & Software Development:** Minhyeok Kang / acornriver (강민혁)
-- **Dance & Performance:** Chaeyoung (채영), Seonghyun (성현)
+- **Dance & Performance:** Chaeyoung Yoon (윤채영), Seonghyun Woo (우성현)
 - **Sound Design:** Seungmin Kim (김승민)
 
 ---
