@@ -6,9 +6,9 @@ A real-time biophysical muscle sound interactive and DSP processing system devel
 
 ## 📖 About the Project
 
-**"Silence"** is an artistic and musical performance work conceived by artist **Chaemin Jung (정채민)** and supported/selected by the **Korea National University of Arts (K-Arts / 한예종)** Artist Support & Grant Program.
+**"Silence"** is an artistic and musical performance work conceived by artist **Chaemin Jung (정채민)** and supported by the **Seoul Foundation for Arts and Culture (서울문화재단) K-Arts Creation Support Program (k-art 제작지원사업)**.
 
-This project is built upon open-source foundations and inspired by the **xsenth / Xth Sense** biophysical interactive instrument paradigm. It captures acoustic muscle vibrations (**Mechanomyogram / MMG**) via physical acoustic sensors, processing organic bio-signals in real time into interactive sound design, synthesis, OSC routing, and visual streams.
+This project is built upon open-source foundations and deeply inspired by Marco Donnarumma's pioneering biophysical interactive instrument, the [**Xth Sense**](https://res.marcodonnarumma.com/projects/xth-sense/). It captures acoustic muscle vibrations (**Mechanomyogram / MMG**) via physical acoustic sensors, processing organic bio-signals in real time into interactive sound design, synthesis, OSC routing, and visual streams.
 
 ---
 
@@ -97,9 +97,10 @@ Alternatively, you can run components individually:
 ---
 
 ## 🙏 Acknowledgments & Credits
-
-- **Korea National University of Arts (K-Arts / 한예종):** Supported and selected through the K-Arts Artist Support Program for the creation of *"Silence"*.
-- **Open Source Community & xsenth / Xth Sense:** Built upon the open-source concept and legacy of biophysical acoustic sensing and mechanomyography instruments.
+ 
+- **Seoul Foundation for Arts and Culture (서울문화재단):** Supported by the Seoul Foundation for Arts and Culture through the **K-Arts Creation Support Program (k-art 제작지원사업)** for the creation of *"Silence"*.
+- **Marco Donnarumma & [Xth Sense](https://res.marcodonnarumma.com/projects/xth-sense/):** With deep respect and profound gratitude to **Marco Donnarumma** for his pioneering research, artistry, and the open-source legacy of the **Xth Sense** biophysical interactive instrument paradigm, which serves as the foundational inspiration for this project.
+- **Open Source Community:** Thanks to the creative coding and open-source audio DSP communities.
 
 ---
 
