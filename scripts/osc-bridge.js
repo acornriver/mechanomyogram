@@ -36,22 +36,24 @@ wss.on('connection', (ws) => {
   console.log(`[WebSocket] Browser client connected.`);
 
   ws.on('message', (message, isBinary) => {
+    const isBinaryData = isBinary || Buffer.isBuffer(message) && message[0] !== 0x7B; // 0x7B is '{' (JSON)
+
     // -------------------------------------------------------
     // A. Binary Audio Chunk Relay (WebSocket Audio Streaming)
     // -------------------------------------------------------
-    if (isBinary) {
+    if (isBinaryData) {
       if (ws.audioRole === 'audio-sender') {
         let receiverCount = 0;
         wss.clients.forEach((client) => {
           if (client !== ws && client.audioRole === 'audio-receiver' && client.readyState === 1) {
-            client.send(message);
+            client.send(message, { binary: true });
             receiverCount++;
           }
         });
         const now = Date.now();
         if (!ws.lastLogTime || now - ws.lastLogTime > 3000) {
           ws.lastLogTime = now;
-          console.log(`🎵 [Audio Relay] Streaming audio -> ${receiverCount} receiver(s)`);
+          console.log(`🎵 [Audio Relay] Streaming PCM audio -> ${receiverCount} receiver(s)`);
         }
       }
       return;

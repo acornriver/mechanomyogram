@@ -530,6 +530,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const webrtcGainSlider = document.getElementById('webrtc-gain');
+  const webrtcGainVal = document.getElementById('webrtc-gain-val');
+  if (webrtcGainSlider) {
+    webrtcGainSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      if (webrtcGainVal) webrtcGainVal.textContent = `${val}%`;
+      webRtcSender.setGain(val / 100);
+    });
+  }
+
   // 60fps Visualizer Animation Loop
   function renderLoop() {
     if (audioEngine.analyser) {

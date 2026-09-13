@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Biophysical Muscle Sound Interactive System (Xth Sense Variation)</title>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js" defer></script>
-  <script type="module" crossorigin src="/assets/main-BSLMASJG.js"></script>
+  <script type="module" crossorigin src="/assets/main-DFozkCH0.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/style-hFp-ZtB8.js">
   <link rel="stylesheet" crossorigin href="/assets/style-CH9QPOXa.css">
 </head>
@@ -322,6 +322,15 @@
       <div id="webrtc-peerjs-inputs" class="control-group hidden">
         <div class="control-label"><label for="webrtc-peer-id">Sender Peer ID</label></div>
         <input type="text" id="webrtc-peer-id" value="mmg-sub-mic" placeholder="mmg-sub-mic">
+      </div>
+
+      <!-- WebRTC Stream Audio Gain -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="webrtc-gain">Stream Audio Gain</label>
+          <span id="webrtc-gain-val" class="value">100%</span>
+        </div>
+        <input type="range" id="webrtc-gain" min="0" max="200" step="1" value="100">
       </div>
 
       <!-- Main Laptop Link Box -->

@@ -322,6 +322,15 @@
         <input type="text" id="webrtc-peer-id" value="mmg-sub-mic" placeholder="mmg-sub-mic">
       </div>
 
+      <!-- WebRTC Stream Audio Gain -->
+      <div class="control-group">
+        <div class="control-label">
+          <label for="webrtc-gain">Stream Audio Gain</label>
+          <span id="webrtc-gain-val" class="value">100%</span>
+        </div>
+        <input type="range" id="webrtc-gain" min="0" max="200" step="1" value="100">
+      </div>
+
       <!-- Main Laptop Link Box -->
       <div class="gauge-box" style="font-size: 0.75rem; line-height: 1.4;">
         <span style="color: var(--accent-cyan); font-weight: 700;">💻 Main Laptop Receiver URL:</span>
