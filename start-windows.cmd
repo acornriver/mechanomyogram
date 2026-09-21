@@ -36,8 +36,16 @@ if not exist "package.json" (
   exit /b 1
 )
 
-if not exist "node_modules\" (
-  echo Installing project dependencies. This is only needed the first time.
+for /f "delims=" %%i in ('node -p "process.platform + '-' + process.arch"') do set "MMG_NODE_PLATFORM=%%i"
+set "MMG_NEEDS_INSTALL=1"
+
+if exist "node_modules\.mmg-dependencies-platform" (
+  findstr /x /c:"%MMG_NODE_PLATFORM%" "node_modules\.mmg-dependencies-platform" >nul 2>&1
+  if not errorlevel 1 set "MMG_NEEDS_INSTALL=0"
+)
+
+if "%MMG_NEEDS_INSTALL%"=="1" (
+  echo Installing Windows-compatible project dependencies. This is needed the first time.
   call npm ci
   if errorlevel 1 (
     echo.
@@ -45,6 +53,7 @@ if not exist "node_modules\" (
     pause
     exit /b 1
   )
+  > "node_modules\.mmg-dependencies-platform" echo %MMG_NODE_PLATFORM%
 )
 
 echo.
